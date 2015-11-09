@@ -121,9 +121,9 @@ void at86rf2xx_hardware_reset()
 
     /* trigger hardware reset */
 
-    digitalWrite(at86rf2xx_dev.sleep_pin, LOW);
+    digitalWrite(at86rf2xx_dev.reset_pin, LOW);
     delayMicroseconds(AT86RF2XX_RESET_PULSE_WIDTH);
-    digitalWrite(at86rf2xx_dev.sleep_pin, HIGH);
+    digitalWrite(at86rf2xx_dev.reset_pin, HIGH);
     delayMicroseconds(AT86RF2XX_RESET_DELAY);
 }
 
