@@ -42,3 +42,5 @@ Without further configuration, this library will use the default AT86RF2xx param
 #define AT86RF2XX_ADDR_SHORT            AT86RF2XX_DEFAULT_ADDR_SHORT
 #define AT86RF2XX_PANID                 AT86RF2XX_DEFAULT_PANID
 ```
+
+Most radio parameters can also be modified after the fact using the set/getters enumerated in `at86rf2xx_getset.c`.
