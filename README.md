@@ -21,10 +21,10 @@ Here's the wiring setup.  You may find the Uno pinout reference helpful.
 
 AT86RF233 (REB) | Arduino Uno
 ---|---
-7 | 8 (digital)
-9 | 2 (digital)
-10 | 7 (digital)
-15 | 6 (digital)
+7 | 8 (digital) (Reset)
+9 | 2 (digital) (Interrupt)
+10 | 7 (digital) (Sleep)
+15 | 6 (digital) (CS)
 16 | MOSI (ICSP header)
 17 | MISO (ICSP header)
 18 | SCK (ICSP header)

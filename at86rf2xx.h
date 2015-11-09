@@ -46,7 +46,6 @@ typedef struct {
     int sleep_pin;                   /**< sleep pin */
     int reset_pin;                   /**< reset pin */
     int int_pin;                     /**< external interrupt pin */
-//    gnrc_nettype_t proto;               /**< protocol the radio expects */
     uint8_t state;                      /**< current state of the radio */
     uint8_t seq_nr;                     /**< sequence number to use next */
     uint8_t frame_len;                  /**< length of the current TX frame */

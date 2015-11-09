@@ -16,12 +16,10 @@
  * @{
  *
  * @file
- * @brief       Interface definition for AT86RF2xx based drivers
+ * @brief       Optional configuration parameters for the at86rf2xx radio
  *
- * @author      Thomas Eichinger <thomas.eichinger@fu-berlin.de>
- * @author      Hauke Petersen <hauke.petersen@fu-berlin.de>
- * @author      Kaspar Schleiser <kaspar@schleiser.de>
- * @author      Daniel Krebs <github@daniel-krebs.net>
+ * @author      Mark Solters <msolters@gmail.com>
+ *
  */
 
 #ifndef AT86RF2XX_CONFIG_H_
@@ -34,7 +32,7 @@ extern "C" {
 /*
  * You can override any of the below defaults with your own configuration parameters.
  * Refer to at86rf2xx_defaults.h to review available values and constraints.
- * 
+ *
  */
 #define AT86RF2XX_CHANNEL               26U//AT86RF2XX_DEFAULT_CHANNEL
 #define AT86RF2XX_TXPOWER               AT86RF2XX_DEFAULT_TXPOWER
