@@ -22,7 +22,6 @@
  */
 
 #include "at86rf2xx.h"
-#include "at86rf2xx_internal.h"
 
 #ifdef MODULE_AT86RF212B
 /* See: Table 9-15. Recommended Mapping of TX Power, Frequency Band, and
@@ -72,22 +71,22 @@ static const uint8_t dbm_to_tx_pow[] = {0x0f, 0x0f, 0x0f, 0x0e, 0x0e, 0x0e,
                                         0x05, 0x03, 0x00};
 #endif
 
-uint16_t at86rf2xx_get_addr_short()
+uint16_t AT86RF2XX::get_addr_short()
 {
-    return (at86rf2xx_dev.addr_short[0] << 8) | at86rf2xx_dev.addr_short[1];
+    return (addr_short[0] << 8) | addr_short[1];
 }
 
-void at86rf2xx_set_addr_short(uint16_t addr)
+void AT86RF2XX::set_addr_short(uint16_t addr)
 {
     at86rf2xx_dev.addr_short[0] = addr >> 8;
     at86rf2xx_dev.addr_short[1] = addr & 0xff;
-    at86rf2xx_reg_write(AT86RF2XX_REG__SHORT_ADDR_0,
+    reg_write(AT86RF2XX_REG__SHORT_ADDR_0,
                         at86rf2xx_dev.addr_short[0]);
-    at86rf2xx_reg_write(AT86RF2XX_REG__SHORT_ADDR_1,
+    reg_write(AT86RF2XX_REG__SHORT_ADDR_1,
                         at86rf2xx_dev.addr_short[1]);
 }
 
-uint64_t at86rf2xx_get_addr_long()
+uint64_t AT86RF2XX::get_addr_long()
 {
     uint64_t addr;
     uint8_t *ap = (uint8_t *)(&addr);
@@ -97,21 +96,20 @@ uint64_t at86rf2xx_get_addr_long()
     return addr;
 }
 
-void at86rf2xx_set_addr_long(uint64_t addr)
+void AT86RF2XX::set_addr_long(uint64_t addr)
 {
     for (int i = 0; i < 8; i++) {
-        at86rf2xx_dev.addr_long[i] = (addr >> ((7 - i) * 8));
-        at86rf2xx_reg_write((AT86RF2XX_REG__IEEE_ADDR_0 + i),
-                            at86rf2xx_dev.addr_long[i]);
+        addr_long[i] = (addr >> ((7 - i) * 8));
+        reg_write((AT86RF2XX_REG__IEEE_ADDR_0 + i), addr_long[i]);
     }
 }
 
-uint8_t at86rf2xx_get_chan()
+uint8_t AT86RF2XX::get_chan()
 {
-    return at86rf2xx_dev.chan;
+    return chan;
 }
 
-void at86rf2xx_set_chan(uint8_t channel)
+void AT86RF2XX::set_chan(uint8_t channel)
 {
     uint8_t tmp;
 
@@ -119,43 +117,43 @@ void at86rf2xx_set_chan(uint8_t channel)
         || channel > AT86RF2XX_MAX_CHANNEL) {
         return;
     }
-    at86rf2xx_dev.chan = channel;
-    tmp = at86rf2xx_reg_read(AT86RF2XX_REG__PHY_CC_CCA);
+    chan = channel;
+    tmp = reg_read(AT86RF2XX_REG__PHY_CC_CCA);
     tmp &= ~(AT86RF2XX_PHY_CC_CCA_MASK__CHANNEL);
     tmp |= (channel & AT86RF2XX_PHY_CC_CCA_MASK__CHANNEL);
-    at86rf2xx_reg_write(AT86RF2XX_REG__PHY_CC_CCA, tmp);
+    reg_write(AT86RF2XX_REG__PHY_CC_CCA, tmp);
 }
 
 #ifdef MODULE_AT86RF212B
-at86rf2xx_freq_t at86rf2xx_get_freq()
+at86rf2xx_freq_t AT86RF2XX::get_freq()
 {
-    return at86rf2xx_dev.freq;
+    return freq;
 }
 
-void at86rf2xx_set_freq(at86rf2xx_freq_t freq)
+void AT86RF2XX::set_freq(at86rf2xx_freq_t freq_)
 {
     uint8_t trx_ctrl2 = 0, rf_ctrl0 = 0;
-    trx_ctrl2 = at86rf2xx_reg_read(AT86RF2XX_REG__TRX_CTRL_2);
+    trx_ctrl2 = reg_read(AT86RF2XX_REG__TRX_CTRL_2);
     trx_ctrl2 &= ~(AT86RF2XX_TRX_CTRL_2_MASK__FREQ_MODE);
-    rf_ctrl0 = at86rf2xx_reg_read(AT86RF2XX_REG__RF_CTRL_0);
+    rf_ctrl0 = reg_read(AT86RF2XX_REG__RF_CTRL_0);
     /* Erase previous conf for GC_TX_OFFS */
     rf_ctrl0 &= ~AT86RF2XX_RF_CTRL_0_MASK__GC_TX_OFFS;
 
     trx_ctrl2 |= AT86RF2XX_TRX_CTRL_2_MASK__SUB_MODE;
     rf_ctrl0 |= AT86RF2XX_RF_CTRL_0_GC_TX_OFFS__2DB;
 
-    switch(freq) {
+    switch(freq_) {
         case AT86RF2XX_FREQ_915MHZ:
-            if (at86rf2xx_dev.chan == 0) {
-                at86rf2xx_set_chan(AT86RF2XX_CHANNEL);
+            if (chan == 0) {
+                set_chan(AT86RF2XX_CHANNEL);
             } else {
-                at86rf2xx_set_chan(at86rf2xx_dev.chan);
+                set_chan(chan);
             }
             break;
 
         case AT86RF2XX_FREQ_868MHZ:
             /* Channel = 0 for 868MHz means 868.3MHz, only one available */
-            at86rf2xx_set_chan(0x00);
+            set_chan(0x00);
             break;
 
         default:
@@ -163,39 +161,38 @@ void at86rf2xx_set_freq(at86rf2xx_freq_t freq)
             //    (unsigned long) freq);
             return;
     }
-    at86rf2xx_dev.freq = freq;
-    at86rf2xx_reg_write(AT86RF2XX_REG__TRX_CTRL_2, trx_ctrl2);
-    at86rf2xx_reg_write(AT86RF2XX_REG__RF_CTRL_0, rf_ctrl0);
+    freq = freq_;
+    reg_write(AT86RF2XX_REG__TRX_CTRL_2, trx_ctrl2);
+    reg_write(AT86RF2XX_REG__RF_CTRL_0, rf_ctrl0);
 }
 #endif
 
-uint16_t at86rf2xx_get_pan()
+uint16_t AT86RF2XX::get_pan()
 {
-    return at86rf2xx_dev.pan;
+    return pan;
 }
 
-void at86rf2xx_set_pan(uint16_t pan)
+void AT86RF2XX::set_pan(uint16_t pan_)
 {
-    at86rf2xx_dev.pan = pan;
+    pan = pan_;
     //DEBUG("pan0: %u, pan1: %u\n", (uint8_t)pan, pan >> 8);
-    at86rf2xx_reg_write(AT86RF2XX_REG__PAN_ID_0, (uint8_t)pan);
-    at86rf2xx_reg_write(AT86RF2XX_REG__PAN_ID_1, (pan >> 8));
+    reg_write(AT86RF2XX_REG__PAN_ID_0, (uint8_t)pan);
+    reg_write(AT86RF2XX_REG__PAN_ID_1, (pan >> 8));
 }
 
-int16_t at86rf2xx_get_txpower()
+int16_t AT86RF2XX::get_txpower()
 {
 #ifdef MODULE_AT86RF212B
-    uint8_t txpower = at86rf2xx_reg_read(AT86RF2XX_REG__PHY_TX_PWR);
+    uint8_t txpower = reg_read(AT86RF2XX_REG__PHY_TX_PWR);
     //DEBUG("txpower value: %x\n", txpower);
-    return tx_pow_to_dbm(at86rf2xx_dev.freq, txpower);
+    return tx_pow_to_dbm(freq, txpower);
 #else
-    uint8_t txpower = at86rf2xx_reg_read(AT86RF2XX_REG__PHY_TX_PWR)
-                & AT86RF2XX_PHY_TX_PWR_MASK__TX_PWR;
+    uint8_t txpower = reg_read(AT86RF2XX_REG__PHY_TX_PWR) & AT86RF2XX_PHY_TX_PWR_MASK__TX_PWR;
     return tx_pow_to_dbm[txpower];
 #endif
 }
 
-void at86rf2xx_set_txpower(int16_t txpower)
+void AT86RF2XX::set_txpower(int16_t txpower)
 {
 #ifdef MODULE_AT86RF212B
     txpower += 25;
@@ -219,69 +216,65 @@ void at86rf2xx_set_txpower(int16_t txpower)
 #endif
     }
 #ifdef MODULE_AT86RF212B
-    if (at86rf2xx_dev.freq == AT86RF2XX_FREQ_915MHZ) {
-        at86rf2xx_reg_write(AT86RF2XX_REG__PHY_TX_PWR,
-                            dbm_to_tx_pow_915[txpower]);
+    if (freq == AT86RF2XX_FREQ_915MHZ) {
+        reg_write(AT86RF2XX_REG__PHY_TX_PWR, dbm_to_tx_pow_915[txpower]);
     }
     else if (at86rf2xx_dev.freq == AT86RF2XX_FREQ_868MHZ) {
-        at86rf2xx_reg_write(AT86RF2XX_REG__PHY_TX_PWR,
-                            dbm_to_tx_pow_868[txpower]);
+        reg_write(AT86RF2XX_REG__PHY_TX_PWR, dbm_to_tx_pow_868[txpower]);
     }
     else {
         return;
     }
 #else
-    at86rf2xx_reg_write(AT86RF2XX_REG__PHY_TX_PWR,
-                        dbm_to_tx_pow[txpower]);
+    reg_write(AT86RF2XX_REG__PHY_TX_PWR, dbm_to_tx_pow[txpower]);
 #endif
 }
 
-uint8_t at86rf2xx_get_max_retries()
+uint8_t AT86RF2XX::get_max_retries()
 {
-    return (at86rf2xx_reg_read(AT86RF2XX_REG__XAH_CTRL_0) >> 4);
+    return (reg_read(AT86RF2XX_REG__XAH_CTRL_0) >> 4);
 }
 
-void at86rf2xx_set_max_retries(uint8_t max)
+void AT86RF2XX::set_max_retries(uint8_t max)
 {
     max = (max > 7) ? 7 : max;
-    uint8_t tmp = at86rf2xx_reg_read(AT86RF2XX_REG__XAH_CTRL_0);
+    uint8_t tmp = reg_read(AT86RF2XX_REG__XAH_CTRL_0);
     tmp &= ~(AT86RF2XX_XAH_CTRL_0__MAX_FRAME_RETRIES);
     tmp |= (max << 4);
-    at86rf2xx_reg_write(AT86RF2XX_REG__XAH_CTRL_0, tmp);
+    reg_write(AT86RF2XX_REG__XAH_CTRL_0, tmp);
 }
 
-uint8_t at86rf2xx_get_csma_max_retries()
+uint8_t AT86RF2XX::get_csma_max_retries()
 {
     uint8_t tmp;
-    tmp  = at86rf2xx_reg_read(AT86RF2XX_REG__XAH_CTRL_0);
+    tmp  = reg_read(AT86RF2XX_REG__XAH_CTRL_0);
     tmp &= AT86RF2XX_XAH_CTRL_0__MAX_CSMA_RETRIES;
     tmp >>= 1;
     return tmp;
 }
 
-void at86rf2xx_set_csma_max_retries(int8_t retries)
+void AT86RF2XX::set_csma_max_retries(int8_t retries)
 {
     retries = (retries > 5) ? 5 : retries; /* valid values: 0-5 */
     retries = (retries < 0) ? 7 : retries; /* max < 0 => disable CSMA (set to 7) */
     //DEBUG("[at86rf2xx] opt: Set CSMA retries to %u\n", retries);
 
-    uint8_t tmp = at86rf2xx_reg_read(AT86RF2XX_REG__XAH_CTRL_0);
+    uint8_t tmp = reg_read(AT86RF2XX_REG__XAH_CTRL_0);
     tmp &= ~(AT86RF2XX_XAH_CTRL_0__MAX_CSMA_RETRIES);
     tmp |= (retries << 1);
-    at86rf2xx_reg_write(AT86RF2XX_REG__XAH_CTRL_0, tmp);
+    reg_write(AT86RF2XX_REG__XAH_CTRL_0, tmp);
 }
 
-void at86rf2xx_set_csma_backoff_exp(uint8_t min, uint8_t max)
+void AT86RF2XX::set_csma_backoff_exp(uint8_t min, uint8_t max)
 {
     max = (max > 8) ? 8 : max;
     min = (min > max) ? max : min;
     //DEBUG("[at86rf2xx] opt: Set min BE=%u, max BE=%u\n", min, max);
 
-    at86rf2xx_reg_write(AT86RF2XX_REG__CSMA_BE,
-            (max << 4) | (min));
+    reg_write(AT86RF2XX_REG__CSMA_BE, (max << 4) | (min));
 }
 
-void at86rf2xx_set_csma_seed(uint8_t entropy[2])
+void AT86RF2XX::set_csma_seed(uint8_t entropy[2])
 {
     if(entropy == NULL) {
         //DEBUG("[at86rf2xx] opt: CSMA seed entropy is nullpointer\n");
@@ -289,16 +282,15 @@ void at86rf2xx_set_csma_seed(uint8_t entropy[2])
     }
     //DEBUG("[at86rf2xx] opt: Set CSMA seed to 0x%x 0x%x\n", entropy[0], entropy[1]);
 
-    at86rf2xx_reg_write(AT86RF2XX_REG__CSMA_SEED_0,
-                           entropy[0]);
+    reg_write(AT86RF2XX_REG__CSMA_SEED_0, entropy[0]);
 
-    uint8_t tmp = at86rf2xx_reg_read(AT86RF2XX_REG__CSMA_SEED_1);
+    uint8_t tmp = reg_read(AT86RF2XX_REG__CSMA_SEED_1);
     tmp &= ~(AT86RF2XX_CSMA_SEED_1__CSMA_SEED_1);
     tmp |= entropy[1] & AT86RF2XX_CSMA_SEED_1__CSMA_SEED_1;
-    at86rf2xx_reg_write(AT86RF2XX_REG__CSMA_SEED_1, tmp);
+    reg_write(AT86RF2XX_REG__CSMA_SEED_1, tmp);
 }
 
-void at86rf2xx_set_option(uint16_t option, bool state)
+void AT86RF2XX::set_option(uint16_t option, bool state)
 {
     uint8_t tmp;
 
@@ -306,39 +298,39 @@ void at86rf2xx_set_option(uint16_t option, bool state)
 
     /* set option field */
     if (state) {
-        at86rf2xx_dev.options |= option;
+        options |= option;
         /* trigger option specific actions */
         switch (option) {
             case AT86RF2XX_OPT_CSMA:
                 //DEBUG("[at86rf2xx] opt: enabling CSMA mode" \
                       "(4 retries, min BE: 3 max BE: 5)\n");
                 /* Initialize CSMA seed with hardware address */
-                at86rf2xx_set_csma_seed(at86rf2xx_dev.addr_long);
-                at86rf2xx_set_csma_max_retries(4);
-                at86rf2xx_set_csma_backoff_exp(3, 5);
+                set_csma_seed(addr_long);
+                set_csma_max_retries(4);
+                set_csma_backoff_exp(3, 5);
                 break;
             case AT86RF2XX_OPT_PROMISCUOUS:
                 //DEBUG("[at86rf2xx] opt: enabling PROMISCUOUS mode\n");
                 /* disable auto ACKs in promiscuous mode */
-                tmp = at86rf2xx_reg_read(AT86RF2XX_REG__CSMA_SEED_1);
+                tmp = reg_read(AT86RF2XX_REG__CSMA_SEED_1);
                 tmp |= AT86RF2XX_CSMA_SEED_1__AACK_DIS_ACK;
-                at86rf2xx_reg_write(AT86RF2XX_REG__CSMA_SEED_1, tmp);
+                reg_write(AT86RF2XX_REG__CSMA_SEED_1, tmp);
                 /* enable promiscuous mode */
-                tmp = at86rf2xx_reg_read(AT86RF2XX_REG__XAH_CTRL_1);
+                tmp = reg_read(AT86RF2XX_REG__XAH_CTRL_1);
                 tmp |= AT86RF2XX_XAH_CTRL_1__AACK_PROM_MODE;
-                at86rf2xx_reg_write(AT86RF2XX_REG__XAH_CTRL_1, tmp);
+                reg_write(AT86RF2XX_REG__XAH_CTRL_1, tmp);
                 break;
             case AT86RF2XX_OPT_AUTOACK:
                 //DEBUG("[at86rf2xx] opt: enabling auto ACKs\n");
-                tmp = at86rf2xx_reg_read(AT86RF2XX_REG__CSMA_SEED_1);
+                tmp = reg_read(AT86RF2XX_REG__CSMA_SEED_1);
                 tmp &= ~(AT86RF2XX_CSMA_SEED_1__AACK_DIS_ACK);
-                at86rf2xx_reg_write(AT86RF2XX_REG__CSMA_SEED_1, tmp);
+                reg_write(AT86RF2XX_REG__CSMA_SEED_1, tmp);
                 break;
             case AT86RF2XX_OPT_TELL_RX_START:
                 //DEBUG("[at86rf2xx] opt: enabling SFD IRQ\n");
-                tmp = at86rf2xx_reg_read(AT86RF2XX_REG__IRQ_MASK);
+                tmp = reg_read(AT86RF2XX_REG__IRQ_MASK);
                 tmp |= AT86RF2XX_IRQ_STATUS_MASK__RX_START;
-                at86rf2xx_reg_write(AT86RF2XX_REG__IRQ_MASK, tmp);
+                reg_write(AT86RF2XX_REG__IRQ_MASK, tmp);
                 break;
             default:
                 /* do nothing */
@@ -346,39 +338,39 @@ void at86rf2xx_set_option(uint16_t option, bool state)
         }
     }
     else {
-        at86rf2xx_dev.options &= ~(option);
+        options &= ~(option);
         /* trigger option specific actions */
         switch (option) {
             case AT86RF2XX_OPT_CSMA:
                 //DEBUG("[at86rf2xx] opt: disabling CSMA mode\n");
                 /* setting retries to -1 means CSMA disabled */
-                at86rf2xx_set_csma_max_retries(-1);
+                set_csma_max_retries(-1);
                 break;
             case AT86RF2XX_OPT_PROMISCUOUS:
                 //DEBUG("[at86rf2xx] opt: disabling PROMISCUOUS mode\n");
                 /* disable promiscuous mode */
-                tmp = at86rf2xx_reg_read(AT86RF2XX_REG__XAH_CTRL_1);
+                tmp = reg_read(AT86RF2XX_REG__XAH_CTRL_1);
                 tmp &= ~(AT86RF2XX_XAH_CTRL_1__AACK_PROM_MODE);
-                at86rf2xx_reg_write(AT86RF2XX_REG__XAH_CTRL_1, tmp);
+                reg_write(AT86RF2XX_REG__XAH_CTRL_1, tmp);
                 /* re-enable AUTOACK only if the option is set */
-                if (at86rf2xx_dev.options & AT86RF2XX_OPT_AUTOACK) {
-                    tmp = at86rf2xx_reg_read(AT86RF2XX_REG__CSMA_SEED_1);
+                if (options & AT86RF2XX_OPT_AUTOACK) {
+                    tmp = reg_read(AT86RF2XX_REG__CSMA_SEED_1);
                     tmp &= ~(AT86RF2XX_CSMA_SEED_1__AACK_DIS_ACK);
-                    at86rf2xx_reg_write(AT86RF2XX_REG__CSMA_SEED_1,
+                    reg_write(AT86RF2XX_REG__CSMA_SEED_1,
                                         tmp);
                 }
                 break;
             case AT86RF2XX_OPT_AUTOACK:
                 //DEBUG("[at86rf2xx] opt: disabling auto ACKs\n");
-                tmp = at86rf2xx_reg_read(AT86RF2XX_REG__CSMA_SEED_1);
+                tmp = reg_read(AT86RF2XX_REG__CSMA_SEED_1);
                 tmp |= AT86RF2XX_CSMA_SEED_1__AACK_DIS_ACK;
-                at86rf2xx_reg_write(AT86RF2XX_REG__CSMA_SEED_1, tmp);
+                reg_write(AT86RF2XX_REG__CSMA_SEED_1, tmp);
                 break;
             case AT86RF2XX_OPT_TELL_RX_START:
                 //DEBUG("[at86rf2xx] opt: disabling SFD IRQ\n");
-                tmp = at86rf2xx_reg_read(AT86RF2XX_REG__IRQ_MASK);
+                tmp = reg_read(AT86RF2XX_REG__IRQ_MASK);
                 tmp &= ~AT86RF2XX_IRQ_STATUS_MASK__RX_START;
-                at86rf2xx_reg_write(AT86RF2XX_REG__IRQ_MASK, tmp);
+                reg_write(AT86RF2XX_REG__IRQ_MASK, tmp);
                 break;
             default:
                 /* do nothing */
@@ -387,18 +379,18 @@ void at86rf2xx_set_option(uint16_t option, bool state)
     }
 }
 
-static inline void _set_state(uint8_t state)
+inline void AT86RF2XX::_set_state(uint8_t state_)
 {
-    at86rf2xx_reg_write(AT86RF2XX_REG__TRX_STATE, state);
-    while (at86rf2xx_get_status() != state);
-    at86rf2xx_dev.state = state;
+    reg_write(AT86RF2XX_REG__TRX_STATE, state_);
+    while (get_status() != state_);
+    state = state_;
 }
 
-void at86rf2xx_set_state(uint8_t state)
+void AT86RF2XX::set_state(uint8_t state_)
 {
-    uint8_t old_state = at86rf2xx_get_status();
+    uint8_t old_state = get_status();
 
-    if (state == old_state) {
+    if (state_ == old_state) {
         return;
     }
     /* make sure there is no ongoing transmission, or state transition already
@@ -406,45 +398,45 @@ void at86rf2xx_set_state(uint8_t state)
     while (old_state == AT86RF2XX_STATE_BUSY_RX_AACK ||
            old_state == AT86RF2XX_STATE_BUSY_TX_ARET ||
            old_state == AT86RF2XX_STATE_IN_PROGRESS) {
-        old_state = at86rf2xx_get_status();
+        old_state = get_status();
     }
 
     /* we need to go via PLL_ON if we are moving between RX_AACK_ON <-> TX_ARET_ON */
     if ((old_state == AT86RF2XX_STATE_RX_AACK_ON &&
-             state == AT86RF2XX_STATE_TX_ARET_ON) ||
+             state_ == AT86RF2XX_STATE_TX_ARET_ON) ||
         (old_state == AT86RF2XX_STATE_TX_ARET_ON &&
-             state == AT86RF2XX_STATE_RX_AACK_ON)) {
+             state_ == AT86RF2XX_STATE_RX_AACK_ON)) {
         _set_state(AT86RF2XX_STATE_PLL_ON);
     }
     /* check if we need to wake up from sleep mode */
     else if (old_state == AT86RF2XX_STATE_SLEEP) {
         //DEBUG("at86rf2xx: waking up from sleep mode\n");
-        at86rf2xx_assert_awake();
+        assert_awake();
     }
 
-    if (state == AT86RF2XX_STATE_SLEEP) {
+    if (state_ == AT86RF2XX_STATE_SLEEP) {
         /* First go to TRX_OFF */
-        at86rf2xx_force_trx_off();
+        force_trx_off();
         /* Discard all IRQ flags, framebuffer is lost anyway */
-        at86rf2xx_reg_read(AT86RF2XX_REG__IRQ_STATUS);
+        reg_read(AT86RF2XX_REG__IRQ_STATUS);
         /* Go to SLEEP mode from TRX_OFF */
-        digitalWrite(at86rf2xx_dev.sleep_pin, HIGH);
-        at86rf2xx_dev.state = state;
+        digitalWrite(sleep_pin, HIGH);
+        state = state_;
     } else {
-        _set_state(state);
+        _set_state(state_);
     }
 }
 
-void at86rf2xx_reset_state_machine()
+void AT86RF2XX::reset_state_machine()
 {
     uint8_t old_state;
 
-    at86rf2xx_assert_awake();
+    assert_awake();
 
     /* Wait for any state transitions to complete before forcing TRX_OFF */
     do {
-        old_state = at86rf2xx_get_status();
+        old_state = get_status();
     } while (old_state == AT86RF2XX_STATE_IN_PROGRESS);
 
-    at86rf2xx_force_trx_off();
+    force_trx_off();
 }
