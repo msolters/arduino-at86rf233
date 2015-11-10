@@ -145,7 +145,7 @@ void AT86RF2XX::set_freq(at86rf2xx_freq_t freq_)
     switch(freq_) {
         case AT86RF2XX_FREQ_915MHZ:
             if (chan == 0) {
-                set_chan(AT86RF2XX_CHANNEL);
+                set_chan(AT86RF2XX_DEFAULT_CHANNEL);
             } else {
                 set_chan(chan);
             }

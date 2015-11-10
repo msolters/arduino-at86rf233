@@ -33,14 +33,8 @@ Power | 20 | VCC (3.3V)
 ![](http://www.gammon.com.au/images/ArduinoUno_R3_Pinouts.png)
 
 ## Driver Configuration
-Without further configuration, this library will use the default AT86RF2xx parameters contained in `at86rf2xx_defaults.h`.  These defaults can be overridden inside `at86rf2xx_config.h`.  For example, to change the radio channel to `25`, you could use the following `at86rf2xx_config.h`:
+Without further configuration, this library will use the default AT86RF2xx parameters contained in `at86rf2xx_defaults.h`.  Most radio parameters can also be modified after the fact using the set/getters enumerated in `at86rf2xx_getset.c`.  For example, to change the radio channel to `25`, simply call `set_chan(25)` on the at86rf2xx device after initialization:
 
-```c
-#define AT86RF2XX_CHANNEL               25  //AT86RF2XX_DEFAULT_CHANNEL
-#define AT86RF2XX_TXPOWER               AT86RF2XX_DEFAULT_TXPOWER
-#define AT86RF2XX_ADDR_LONG             AT86RF2XX_DEFAULT_ADDR_LONG
-#define AT86RF2XX_ADDR_SHORT            AT86RF2XX_DEFAULT_ADDR_SHORT
-#define AT86RF2XX_PANID                 AT86RF2XX_DEFAULT_PANID
+```cpp
+
 ```
-
-Most radio parameters can also be modified after the fact using the set/getters enumerated in `at86rf2xx_getset.c`.

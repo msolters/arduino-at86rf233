@@ -109,17 +109,17 @@ void AT86RF2XX::reset()
     options = 0;
 
     /* set short and long address */
-    set_addr_long(AT86RF2XX_ADDR_LONG);
-    set_addr_short(AT86RF2XX_ADDR_SHORT);
+    set_addr_long(AT86RF2XX_DEFAULT_ADDR_LONG);
+    set_addr_short(AT86RF2XX_DEFAULT_ADDR_SHORT);
 
     /* set default PAN id */
-    set_pan(AT86RF2XX_PANID);
+    set_pan(AT86RF2XX_DEFAULT_PANID);
 
     /* set default channel */
-    set_chan(AT86RF2XX_CHANNEL);
+    set_chan(AT86RF2XX_DEFAULT_CHANNEL);
 
     /* set default TX power */
-    set_txpower(AT86RF2XX_TXPOWER);
+    set_txpower(AT86RF2XX_DEFAULT_TXPOWER);
 
     /* set default options */
     set_option(AT86RF2XX_OPT_PROMISCUOUS, true);

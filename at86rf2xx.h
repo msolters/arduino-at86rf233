@@ -31,9 +31,9 @@
 #include <Arduino.h>
 #include <stdint.h>
 #include "ieee802154.h"
-#include "at86rf2xx_registers.h"
-#include "at86rf2xx_defaults.h"
-#include "at86rf2xx_config.h"
+#include "at86rf2xx-registers.h"
+#include "at86rf2xx-defaults.h"
+#include "at86rf2xx-config.h"
 
 /**
  * @brief   Transition time from SLEEP to TRX_OFF in us, refer figure 7-4, p.42.
@@ -57,7 +57,7 @@ class AT86RF2XX
 {
   public:
     AT86RF2XX();
-    
+
     /**
      * @brief   Initialize a given AT86RF2xx device
      *
@@ -390,7 +390,7 @@ class AT86RF2XX
     uint8_t addr_long[8];               /**< the radio's long address */
     uint16_t options;                   /**< state of used options */
     uint8_t idle_state;                 /**< state to return to after sending */
-    
+
     /**
      * @brief   Trigger a clear channel assessment
      *

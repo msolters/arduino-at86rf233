@@ -14,6 +14,7 @@ AT86RF2XX at86rf2xx_dev = AT86RF2XX();
 void setup() {
   Serial.begin(115200);
   at86rf2xx_dev.init(SEL, IRQ, SLP_TR, RESET);
+  at86rf2xx_dev.set_chan(26);
 }
 
 void loop() {
