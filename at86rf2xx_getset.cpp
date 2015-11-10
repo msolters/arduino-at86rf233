@@ -78,12 +78,12 @@ uint16_t AT86RF2XX::get_addr_short()
 
 void AT86RF2XX::set_addr_short(uint16_t addr)
 {
-    at86rf2xx_dev.addr_short[0] = addr >> 8;
-    at86rf2xx_dev.addr_short[1] = addr & 0xff;
+    addr_short[0] = addr >> 8;
+    addr_short[1] = addr & 0xff;
     reg_write(AT86RF2XX_REG__SHORT_ADDR_0,
-                        at86rf2xx_dev.addr_short[0]);
+                        addr_short[0]);
     reg_write(AT86RF2XX_REG__SHORT_ADDR_1,
-                        at86rf2xx_dev.addr_short[1]);
+                        addr_short[1]);
 }
 
 uint64_t AT86RF2XX::get_addr_long()
@@ -91,7 +91,7 @@ uint64_t AT86RF2XX::get_addr_long()
     uint64_t addr;
     uint8_t *ap = (uint8_t *)(&addr);
     for (int i = 0; i < 8; i++) {
-        ap[i] = at86rf2xx_dev.addr_long[7 - i];
+        ap[i] = addr_long[7 - i];
     }
     return addr;
 }
