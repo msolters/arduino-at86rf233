@@ -18,17 +18,17 @@ In this example, we will be using an Arduino Uno.  You are free to use any MCU w
 
 Here's the wiring setup.  You may find the Uno pinout reference helpful (included below).
 
-AT86RF233 (REB X-Pro Extension Header) | Arduino Uno
----|---
-7 | 8 (digital) (Reset)
-9 | 2 (digital) (Interrupt)
-10 | 7 (digital) (Sleep)
-15 | 6 (digital) (CS)
-16 | MOSI (ICSP header)
-17 | MISO (ICSP header)
-18 | SCK (ICSP header)
-19 | GND
-20 | VCC (3.3V)
+Purpose | AT86RF233 (REB X-Pro Extension Header) | Arduino Uno
+---|---|---
+Reset | 7 | 8
+Interrupt | 9 | 2
+Sleep | 10 | 7
+CS | 15 | 6
+MOSI | 16 | MOSI (ICSP header)
+MISO | 17 | MISO (ICSP header)
+SCK | 18 | SCK (ICSP header)
+Ground | 19 | GND
+Power | 20 | VCC (3.3V)
 
 ![](http://www.gammon.com.au/images/ArduinoUno_R3_Pinouts.png)
 
