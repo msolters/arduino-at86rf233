@@ -32,12 +32,12 @@
 /*  Declare radio device as globally scoped struct  */
 AT86RF2XX at86rf2xx = AT86RF2XX();
 
-/*  Interrupt flag  */
-volatile int at86rf2xx_events = 0;
-
-static void _irq_handler()
+/**
+ * @brief   Increments events count by  1.
+ */
+static void at86rf2xx_irq_handler()
 {
-    at86rf2xx_events++;
+    at86rf2xx.events++;
     return;
 }
 
@@ -78,7 +78,7 @@ int AT86RF2XX::init(int cs_pin_, int int_pin_, int sleep_pin_, int reset_pin_)
     digitalWrite(sleep_pin, LOW);
     digitalWrite(reset_pin, HIGH);
     digitalWrite(cs_pin, HIGH);
-    attachInterrupt(digitalPinToInterrupt(int_pin), _irq_handler, RISING);
+    attachInterrupt(digitalPinToInterrupt(int_pin), at86rf2xx_irq_handler, RISING);
 
     /* make sure device is not sleeping, so we can query part number */
     assert_awake();

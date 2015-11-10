@@ -51,10 +51,12 @@
  */
 #define AT86RF2XX_RESET_DELAY           (26U)
 
-
 class AT86RF2XX
 {
   public:
+
+    volatile int events;                /**< # of pending interrupts from the radio */
+
     AT86RF2XX();
 
     /**
@@ -373,10 +375,10 @@ class AT86RF2XX
     void hardware_reset();
 
   private:
-    int cs_pin;                      /**< chip select pin */
-    int sleep_pin;                   /**< sleep pin */
-    int reset_pin;                   /**< reset pin */
-    int int_pin;                     /**< external interrupt pin */
+    int cs_pin;                         /**< chip select pin */
+    int sleep_pin;                      /**< sleep pin */
+    int reset_pin;                      /**< reset pin */
+    int int_pin;                        /**< external interrupt pin */
     uint8_t state;                      /**< current state of the radio */
     uint8_t seq_nr;                     /**< sequence number to use next */
     uint8_t frame_len;                  /**< length of the current TX frame */
@@ -401,9 +403,6 @@ class AT86RF2XX
 
 /*  Declare at86rf2xx device  */
 extern AT86RF2XX at86rf2xx;
-
-/*  Declare event counter for the device. */
-extern volatile int at86rf2xx_events;
 
 #endif /* AT86RF2XX_H_ */
 /** @} */
