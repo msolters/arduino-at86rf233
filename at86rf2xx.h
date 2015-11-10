@@ -33,7 +33,6 @@
 #include "ieee802154.h"
 #include "at86rf2xx-registers.h"
 #include "at86rf2xx-defaults.h"
-#include "at86rf2xx-config.h"
 
 /**
  * @brief   Transition time from SLEEP to TRX_OFF in us, refer figure 7-4, p.42.
@@ -400,16 +399,11 @@ class AT86RF2XX
     bool cca();
 };
 
+/*  Declare at86rf2xx device  */
+extern AT86RF2XX at86rf2xx;
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
+/*  Declare event counter for the device. */
 extern volatile int at86rf2xx_events;
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif /* AT86RF2XX_H_ */
 /** @} */

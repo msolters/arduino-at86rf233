@@ -219,7 +219,7 @@ void AT86RF2XX::set_txpower(int16_t txpower)
     if (freq == AT86RF2XX_FREQ_915MHZ) {
         reg_write(AT86RF2XX_REG__PHY_TX_PWR, dbm_to_tx_pow_915[txpower]);
     }
-    else if (at86rf2xx_dev.freq == AT86RF2XX_FREQ_868MHZ) {
+    else if (at86rf2xx.freq == AT86RF2XX_FREQ_868MHZ) {
         reg_write(AT86RF2XX_REG__PHY_TX_PWR, dbm_to_tx_pow_868[txpower]);
     }
     else {

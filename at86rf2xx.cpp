@@ -29,6 +29,9 @@
 
 #include "at86rf2xx.h"
 
+/*  Declare radio device as globally scoped struct  */
+AT86RF2XX at86rf2xx = AT86RF2XX();
+
 /*  Interrupt flag  */
 volatile int at86rf2xx_events = 0;
 
@@ -233,8 +236,8 @@ void AT86RF2XX::tx_exec()
     sram_write(0, &(frame_len), 1);
     /* trigger sending of pre-loaded frame */
     reg_write(AT86RF2XX_REG__TRX_STATE, AT86RF2XX_TRX_STATE__TX_START);
-    /*if (at86rf2xx_dev.event_cb && (at86rf2xx_dev.options & AT86RF2XX_OPT_TELL_TX_START)) {
-        at86rf2xx_dev.event_cb(NETDEV_EVENT_TX_STARTED, NULL);
+    /*if (at86rf2xx.event_cb && (at86rf2xx.options & AT86RF2XX_OPT_TELL_TX_START)) {
+        at86rf2xx.event_cb(NETDEV_EVENT_TX_STARTED, NULL);
     }*/
 }
 
