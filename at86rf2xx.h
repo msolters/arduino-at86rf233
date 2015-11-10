@@ -31,7 +31,6 @@
 #include <Arduino.h>
 #include <stdint.h>
 #include "ieee802154.h"
-#include "at86rf2xx_internal.h"
 #include "at86rf2xx_registers.h"
 #include "at86rf2xx_defaults.h"
 #include "at86rf2xx_config.h"
