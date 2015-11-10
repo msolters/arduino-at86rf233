@@ -36,6 +36,24 @@
 #include "at86rf2xx_defaults.h"
 #include "at86rf2xx_config.h"
 
+/**
+ * @brief   Transition time from SLEEP to TRX_OFF in us, refer figure 7-4, p.42.
+ *          For different environments refer figure 13-13, p.201
+ */
+#define AT86RF2XX_WAKEUP_DELAY          (300U)
+
+/**
+ * @brief   Minimum reset pulse width, refer p.190
+ */
+#define AT86RF2XX_RESET_PULSE_WIDTH     (1U)
+
+/**
+ * @brief   Transition time to TRX_OFF after reset pulse in us, refer
+ *          figure 7-8, p. 44.
+ */
+#define AT86RF2XX_RESET_DELAY           (26U)
+
+
 class AT86RF2XX
 {
   public:
@@ -388,7 +406,6 @@ class AT86RF2XX
 extern "C" {
 #endif
 
-extern AT86RF2XX at86rf2xx_dev;
 extern volatile int at86rf2xx_events;
 
 #ifdef __cplusplus
