@@ -1,6 +1,8 @@
 # arduino-at86rf233
 Simple Arduino driver for the AT86RF233 802.15.4 radio module
 
+This is a C++ port of the AT86RF233 driver from [RIOT-OS](https://github.com/RIOT-OS/RIOT)
+
 [arduino-at86rf233.ino](https://github.com/msolters/arduino-at86rf233/blob/master/arduino-at86rf233.ino) demonstrates the simplest example application -- an Arduino sketch that scans for nearby traffic and prints incoming frames over serial (115200 baud).
 
 ## Radio Hardware
